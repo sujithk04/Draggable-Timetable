@@ -89,7 +89,7 @@ const Timetable = () => {
     if (sourceId === "classes") {
       const sourceIndex = update.source.index;
       const hoveredClass = classes[sourceIndex];
-      setHoveredColor(hoveredClass.color.split(' ')[1]);
+      setHoveredColor(hoveredClass.color.split(" ")[1]);
 
       const destinationId = update.destination?.droppableId;
       if (destinationId) {
@@ -100,15 +100,69 @@ const Timetable = () => {
     }
   };
 
+  type TimeTableRowsProps = {
+    times: string[];
+  };
+
+  const TimeTableRows: React.FC<TimeTableRowsProps> = ({ times }) => {
+    return (
+      <>
+        {times.map((time) => (
+          <tr key={time}>
+            <th
+              className={`px-4 py-2 ${
+                hoveredTime === time ? hoveredColor : ""
+              }`}
+            >
+              {time}
+            </th>
+            {days.map((day) => (
+              <Droppable key={day} droppableId={`${day}-${time}`}>
+                {(props) => (
+                  <td
+                    ref={props.innerRef}
+                    {...props.droppableProps}
+                    className="border px-4 py-2 list-none"
+                  >
+                    {schedule[`${day}-${time}`] && (
+                      <Draggable
+                        draggableId={schedule[`${day}-${time}`]?.id!}
+                        index={0}
+                      >
+                        {(props) => (
+                          <div
+                            ref={props.innerRef}
+                            {...props.draggableProps}
+                            {...props.dragHandleProps}
+                            className={`p-2 mb-2 ${
+                              schedule[`${day}-${time}`]?.color.split(" ")[0]
+                            } text-white rounded`}
+                          >
+                            {schedule[`${day}-${time}`]?.name}
+                          </div>
+                        )}
+                      </Draggable>
+                    )}
+                    {props.placeholder}
+                  </td>
+                )}
+              </Droppable>
+            ))}
+          </tr>
+        ))}
+      </>
+    );
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate}>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4">
         <Droppable droppableId="classes">
-          {(provided) => (
+          {(props) => (
             <div
               className="col-span-1 bg-white shadow-lg p-4 rounded-md"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
+              {...props.droppableProps}
+              ref={props.innerRef}
             >
               <h2 className="text-xl font-bold mb-4">Available Classes</h2>
               <ul className="list-none">
@@ -118,19 +172,21 @@ const Timetable = () => {
                     draggableId={cls.id.toString()}
                     index={index}
                   >
-                    {(provided) => (
+                    {(props) => (
                       <li
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`p-2 mb-2 ${cls.color.split(' ')[0]} text-white rounded`}
+                        ref={props.innerRef}
+                        {...props.draggableProps}
+                        {...props.dragHandleProps}
+                        className={`p-2 mb-2 ${
+                          cls.color.split(" ")[0]
+                        } text-white rounded`}
                       >
                         {cls.name}
                       </li>
                     )}
                   </Draggable>
                 ))}
-                {provided.placeholder}
+                {props.placeholder}
               </ul>
             </div>
           )}
@@ -166,10 +222,10 @@ const Timetable = () => {
                   </th>
                   {days.map((day) => (
                     <Droppable key={day} droppableId={`${day}-${time}`}>
-                      {(provided) => (
+                      {(props) => (
                         <td
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
+                          ref={props.innerRef}
+                          {...props.droppableProps}
                           className="border px-4 py-2 list-none"
                         >
                           {schedule[`${day}-${time}`] && (
@@ -177,13 +233,15 @@ const Timetable = () => {
                               draggableId={schedule[`${day}-${time}`]?.id!}
                               index={0}
                             >
-                              {(provided) => (
+                              {(props) => (
                                 <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
+                                  ref={props.innerRef}
+                                  {...props.draggableProps}
+                                  {...props.dragHandleProps}
                                   className={`p-2 mb-2 ${
-                                    schedule[`${day}-${time}`]?.color.split(' ')[0]
+                                    schedule[`${day}-${time}`]?.color.split(
+                                      " "
+                                    )[0]
                                   } text-white rounded`}
                                 >
                                   {schedule[`${day}-${time}`]?.name}
@@ -191,7 +249,7 @@ const Timetable = () => {
                               )}
                             </Draggable>
                           )}
-                          {provided.placeholder}
+                          {props.placeholder}
                         </td>
                       )}
                     </Droppable>
@@ -218,10 +276,10 @@ const Timetable = () => {
                   </th>
                   {days.map((day) => (
                     <Droppable key={day} droppableId={`${day}-${time}`}>
-                      {(provided) => (
+                      {(props) => (
                         <td
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
+                          ref={props.innerRef}
+                          {...props.droppableProps}
                           className="border px-4 py-2 list-none"
                         >
                           {schedule[`${day}-${time}`] && (
@@ -229,13 +287,15 @@ const Timetable = () => {
                               draggableId={schedule[`${day}-${time}`]?.id!}
                               index={0}
                             >
-                              {(provided) => (
+                              {(props) => (
                                 <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
+                                  ref={props.innerRef}
+                                  {...props.draggableProps}
+                                  {...props.dragHandleProps}
                                   className={`p-2 mb-2 ${
-                                    schedule[`${day}-${time}`]?.color.split(' ')[0]
+                                    schedule[`${day}-${time}`]?.color.split(
+                                      " "
+                                    )[0]
                                   } text-white rounded`}
                                 >
                                   {schedule[`${day}-${time}`]?.name}
@@ -243,7 +303,7 @@ const Timetable = () => {
                               )}
                             </Draggable>
                           )}
-                          {provided.placeholder}
+                          {props.placeholder}
                         </td>
                       )}
                     </Droppable>
