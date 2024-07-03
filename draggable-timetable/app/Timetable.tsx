@@ -82,18 +82,20 @@ const TimeTableRows: React.FC<TimeTableRowsProps> = ({
                       )}
                     </Draggable>
                   )}
-
-{teacher[`${day}-${time}`] && (
+                  {provided.placeholder}
+   
+                 {teacher[`${day}-${time}`] && (
                     <Draggable
                       draggableId={teacher[`${day}-${time}`]?.id!}
                       index={0}
                     >
+                      
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`p-2 mb-2 text ${teacher[`${day}-${time}`]?.color.split(" ")[0]
+                          className={`p-2 mb-2 text ${schedule[`${day}-${time}`]?.color.split(" ")[0]
                             } text-white rounded`}
                         >
                           {teacher[`${day}-${time}`]?.teacherName}
@@ -101,10 +103,8 @@ const TimeTableRows: React.FC<TimeTableRowsProps> = ({
                       )}
                     </Draggable>
                   )}
-
-
+                 {provided.placeholder}
                 
-                  {provided.placeholder}
                 </td>
               )}
             </Droppable>
@@ -137,7 +137,6 @@ const initialTeachers: TeacherItem[] = [
 ];
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const timesMorning = ["9AM", "10AM", "11AM"];
-
 const timesAfternoon = ["1PM", "2PM"];
 
 function Timetable() {
@@ -146,14 +145,11 @@ function Timetable() {
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
   const [hoveredTime, setHoveredTime] = useState<string | null>(null);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
-
   const generateUniqueId = () =>
     `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
-
     const sourceId = source.droppableId;
     const destinationId = destination.droppableId;
 
@@ -182,6 +178,43 @@ function Timetable() {
         };
       });
     }
+
+    if (sourceId === "teachers" && destinationId !== "teachers") {
+      const movedTeacher = initialTeachers[source.index];
+      const newTeacherInstance = { ...movedTeacher, id: generateUniqueId() };
+      setTeacher((prev) => ({
+        ...prev,
+        [destinationId]: newTeacherInstance,
+      }));
+    } else if (sourceId !== "teachers" && destinationId === "teachers") {
+      const movedTeacher = teacher[sourceId];
+      setTeacher((prev) => {
+        const updated = { ...prev };
+        delete updated[sourceId];
+        return updated;
+      });
+    } else if (sourceId !== "teachers" && destinationId !== "teachers") {
+      const movedTeacher = teacher[sourceId];
+      setTeacher((prev) => {
+        const updated = { ...prev };
+        delete updated[sourceId];
+        return {
+          ...updated,
+          [destinationId]: movedTeacher,
+        };
+      });
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     setHoveredDay(null);
     setHoveredTime(null);
@@ -300,7 +333,7 @@ function Timetable() {
                   hoveredColor={hoveredColor}
                   days={days}
                   schedule={schedule}
-                   teacher={teacher}                />
+                  teacher={teacher}                />
                 <tr>
                   <td className="px-4 py-2" />
                   <td
