@@ -26,7 +26,7 @@ type Schedule = {
 };
 
 type Teacher = {
-  [key:string]:TeacherItem | undefined;
+  [key: string]: TeacherItem | undefined;
 }
 
 type TimeTableRowsProps = {
@@ -35,7 +35,7 @@ type TimeTableRowsProps = {
   hoveredColor: string | null;
   days: string[];
   schedule: Schedule;
-  teacher:Teacher;
+  teacher: Teacher;
 };
 
 const TimeTableRows: React.FC<TimeTableRowsProps> = ({
@@ -44,15 +44,15 @@ const TimeTableRows: React.FC<TimeTableRowsProps> = ({
   hoveredColor,
   days,
   schedule,
+  teacher
 }) => {
   return (
     <>
       {times.map((time) => (
         <tr key={time}>
           <th
-            className={`px-4 py-2 ${
-              hoveredTime === time ? hoveredColor : "text"
-            }`}
+            className={`px-4 py-2 ${hoveredTime === time ? hoveredColor : "text"
+              }`}
           >
             {time}
           </th>
@@ -74,15 +74,36 @@ const TimeTableRows: React.FC<TimeTableRowsProps> = ({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`p-2 mb-2 text ${
-                            schedule[`${day}-${time}`]?.color.split(" ")[0]
-                          } text-white rounded`}
+                          className={`p-2 mb-2 text ${schedule[`${day}-${time}`]?.color.split(" ")[0]
+                            } text-white rounded`}
                         >
                           {schedule[`${day}-${time}`]?.name}
                         </div>
                       )}
                     </Draggable>
                   )}
+
+{teacher[`${day}-${time}`] && (
+                    <Draggable
+                      draggableId={teacher[`${day}-${time}`]?.id!}
+                      index={0}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`p-2 mb-2 text ${teacher[`${day}-${time}`]?.color.split(" ")[0]
+                            } text-white rounded`}
+                        >
+                          {teacher[`${day}-${time}`]?.teacherName}
+                        </div>
+                      )}
+                    </Draggable>
+                  )}
+
+
+                
                   {provided.placeholder}
                 </td>
               )}
@@ -106,13 +127,13 @@ const initialClasses: ClassItem[] = [
 ];
 const initialTeachers: TeacherItem[] = [
   { id: "1", teacherName: "Math Teacher", color: "bg-blue-500 text-blue-500" },
-  { id: "1", teacherName: "Science Teacher",color: "bg-green-500 text-green-500"  },
-  { id: "1", teacherName: "English Teacher" , color: "bg-yellow-500 text-yellow-500" },
-  { id: "1", teacherName: "Islamic Teacher",color: "bg-red-500 text-yellow-500"  },
-  { id: "1", teacherName: "Social Teacher",color: "bg-purple-500 text-purple-500"  },
-  { id: "1", teacherName: "History Teacher",color: "bg-pink-500 text-pink-500"  },
-  { id: "1", teacherName: "Arabic Teacher",color: "bg-indigo-500 text-indigo-500"  },
-  { id: "1", teacherName: "Physics Teacher",color: "bg-gray-500 text-gray-500"   },
+  { id: "1", teacherName: "Science Teacher", color: "bg-green-500 text-green-500" },
+  { id: "1", teacherName: "English Teacher", color: "bg-yellow-500 text-yellow-500" },
+  { id: "1", teacherName: "Islamic Teacher", color: "bg-red-500 text-yellow-500" },
+  { id: "1", teacherName: "Social Teacher", color: "bg-purple-500 text-purple-500" },
+  { id: "1", teacherName: "History Teacher", color: "bg-pink-500 text-pink-500" },
+  { id: "1", teacherName: "Arabic Teacher", color: "bg-indigo-500 text-indigo-500" },
+  { id: "1", teacherName: "Physics Teacher", color: "bg-gray-500 text-gray-500" },
 ];
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const timesMorning = ["9AM", "10AM", "11AM"];
@@ -121,6 +142,7 @@ const timesAfternoon = ["1PM", "2PM"];
 
 function Timetable() {
   const [schedule, setSchedule] = useState<Schedule>({});
+  const [teacher, setTeacher] = useState<Teacher>({});
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
   const [hoveredTime, setHoveredTime] = useState<string | null>(null);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
@@ -206,9 +228,8 @@ function Timetable() {
                           ref={props.innerRef}
                           {...props.draggableProps}
                           {...props.dragHandleProps}
-                          className={`p-2 mb-2 ${
-                            cls.color.split(" ")[0]
-                          } text-white rounded`}
+                          className={`p-2 mb-2 ${cls.color.split(" ")[0]
+                            } text-white rounded`}
                         >
                           {cls.name}
                         </li>
@@ -242,9 +263,8 @@ function Timetable() {
                           ref={props.innerRef}
                           {...props.draggableProps}
                           {...props.dragHandleProps}
-                          className={`p-2 mb-2 ${
-                            tcr.color.split(" ")[0]
-                          } text-white rounded`}
+                          className={`p-2 mb-2 ${tcr.color.split(" ")[0]
+                            } text-white rounded`}
                         >
                           {tcr.teacherName}
                         </li>
@@ -265,9 +285,8 @@ function Timetable() {
                   {days.map((day) => (
                     <th
                       key={day}
-                      className={`px-4 py-2 ${
-                        hoveredDay === day ? hoveredColor : "text"
-                      }`}
+                      className={`px-4 py-2 ${hoveredDay === day ? hoveredColor : "text"
+                        }`}
                     >
                       {day}
                     </th>
@@ -281,7 +300,7 @@ function Timetable() {
                   hoveredColor={hoveredColor}
                   days={days}
                   schedule={schedule}
-                />
+                   teacher={teacher}                />
                 <tr>
                   <td className="px-4 py-2" />
                   <td
@@ -297,6 +316,7 @@ function Timetable() {
                   hoveredColor={hoveredColor}
                   days={days}
                   schedule={schedule}
+                  teacher={teacher}   
                 />
                 <tr>
                   <td className="px-4 py-2" />
