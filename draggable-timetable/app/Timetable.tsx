@@ -15,9 +15,19 @@ type ClassItem = {
   color: string;
 };
 
+type TeacherItem = {
+  id: string;
+  teacherName: string;
+  color: string;
+}
+
 type Schedule = {
   [key: string]: ClassItem | undefined;
 };
+
+type Teacher = {
+  [key:string]:TeacherItem | undefined;
+}
 
 type TimeTableRowsProps = {
   times: string[];
@@ -25,6 +35,7 @@ type TimeTableRowsProps = {
   hoveredColor: string | null;
   days: string[];
   schedule: Schedule;
+  teacher:Teacher;
 };
 
 const TimeTableRows: React.FC<TimeTableRowsProps> = ({
@@ -93,7 +104,16 @@ const initialClasses: ClassItem[] = [
   { id: "7", name: "PE", color: "bg-indigo-500 text-indigo-500" },
   { id: "8", name: "Geography", color: "bg-gray-500 text-gray-500" },
 ];
-
+const initialTeachers: TeacherItem[] = [
+  { id: "1", teacherName: "Math Teacher", color: "bg-blue-500 text-blue-500" },
+  { id: "1", teacherName: "Science Teacher",color: "bg-green-500 text-green-500"  },
+  { id: "1", teacherName: "English Teacher" , color: "bg-yellow-500 text-yellow-500" },
+  { id: "1", teacherName: "Islamic Teacher",color: "bg-red-500 text-yellow-500"  },
+  { id: "1", teacherName: "Social Teacher",color: "bg-purple-500 text-purple-500"  },
+  { id: "1", teacherName: "History Teacher",color: "bg-pink-500 text-pink-500"  },
+  { id: "1", teacherName: "Arabic Teacher",color: "bg-indigo-500 text-indigo-500"  },
+  { id: "1", teacherName: "Physics Teacher",color: "bg-gray-500 text-gray-500"   },
+];
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const timesMorning = ["9AM", "10AM", "11AM"];
 
@@ -118,7 +138,6 @@ function Timetable() {
     if (sourceId === "classes" && destinationId !== "classes") {
       const movedClass = initialClasses[source.index];
       const newClassInstance = { ...movedClass, id: generateUniqueId() };
-
       setSchedule((prev) => ({
         ...prev,
         [destinationId]: newClassInstance,
@@ -149,7 +168,6 @@ function Timetable() {
 
   const onDragUpdate = (update: DragUpdate) => {
     const sourceId = update.source.droppableId;
-
     const sourceIndex = update.source.index;
     const hoveredClass = initialClasses[sourceIndex];
     setHoveredColor(hoveredClass.color.split(" ")[1]);
@@ -193,6 +211,42 @@ function Timetable() {
                           } text-white rounded`}
                         >
                           {cls.name}
+                        </li>
+                      )}
+                    </Draggable>
+                  ))}
+                  {props.placeholder}
+                </ul>
+              </div>
+            )}
+          </Droppable>
+          <Droppable droppableId="teachers">
+            {(props) => (
+              <div
+                {...props.droppableProps}
+                ref={props.innerRef}
+                className="col-span-1 bg-white dark:bg-gray-700 shadow-lg p-4 rounded-md"
+              >
+                <h2 className="text-xl font-bold mb-4 text">
+                  Available Teachers
+                </h2>
+                <ul className="non-list">
+                  {initialTeachers.map((tcr, index) => (
+                    <Draggable
+                      key={tcr.id}
+                      draggableId={tcr.id.toString()}
+                      index={index}
+                    >
+                      {(props) => (
+                        <li
+                          ref={props.innerRef}
+                          {...props.draggableProps}
+                          {...props.dragHandleProps}
+                          className={`p-2 mb-2 ${
+                            tcr.color.split(" ")[0]
+                          } text-white rounded`}
+                        >
+                          {tcr.teacherName}
                         </li>
                       )}
                     </Draggable>
